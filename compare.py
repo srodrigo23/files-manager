@@ -1,0 +1,6 @@
+
+
+import filecmp
+
+
+print(filecmp('', ''))
