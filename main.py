@@ -1,39 +1,39 @@
 import sys
 
 from PySide6 import QtCore, QtWidgets, QtGui
-import PySide6.QtCore
+from PySide6.QtCore import QDir
 from PySide6.QtWidgets import QPushButton, QGridLayout, QFileSystemModel, QTreeView, QHBoxLayout, QVBoxLayout
+from PySide6.QtGui import QPicture, QPixmap
+class FilesExplorerPanel(QtWidgets.QWidget):
 
-class MyPanel(QtWidgets.QWidget):
-
-    def __init__(self, color="red") -> None:
+    def __init__(self, color="green") -> None:
         super().__init__()
-
-        # self.resize(100, 100)
-        # self.button = QtWidgets.QPushButton(text="Click me!")
-        # self.text = QtWidgets.QLabel(
-        #     text = "Hello World",
-        #     alignment = QtCore.Qt.AlignCenter
-        # )
-        # self.setObjectName("siki")
+        self.path = '/Users/sergiorodrigo'
+        self.text = QtWidgets.QLabel(
+            # text = QDir.currentPath(),
+            text=self.path,
+            alignment = QtCore.Qt.AlignCenter
+        )
         self.model = QFileSystemModel()
         self.model.setRootPath('')
+
         self.tree = QTreeView()
         self.tree.setModel(self.model)
-        
-        self.tree.setAnimated(False)
+        self.tree.setRootIndex(self.model.index(self.path))
+        self.tree.setAnimated(True)
         self.tree.setIndentation(20)
         self.tree.setSortingEnabled(True)
+        self.tree.setColumnHidden(1, True)
+        self.tree.setColumnHidden(2, True)
+        self.tree.setColumnHidden(3, True)
 
         self.layout = QtWidgets.QVBoxLayout(self)
-        
-        # self.layout.addWidget(self.button)
-        # self.layout.addWidget(self.text)
+        self.layout.addWidget(self.text)
         self.layout.addWidget(self.tree)
+        
         # self.setStyleSheet(f"background-color: {color}")
 
-
-class RightPanel(QtWidgets.QWidget):
+class SidePanel(QtWidgets.QWidget):
 
     def __init__(self) -> None:
         super().__init__()
@@ -51,6 +51,12 @@ class PreviewFilePanel(QtWidgets.QWidget):
             text = "Preview",
             alignment = QtCore.Qt.AlignCenter
         )
+        self.preview.setPixmap(
+            QPixmap('icons/media/audio/mp3.png')\
+                .scaled(128, 128, 
+                    QtCore.Qt.KeepAspectRatio
+                )
+            )
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.preview)
 
@@ -68,44 +74,32 @@ class ControlPanel(QtWidgets.QWidget):
 
         self.moveButton = QtWidgets.QPushButton(text="Move")
         self.moveButton.setIcon(QtGui.QIcon('icons/app.png'))
-        # self.panel = QtWidgets.QWidget()
         
         self.layout = QtWidgets.QHBoxLayout(self)
         self.layout.addWidget(self.uploadButton)
         self.layout.addWidget(self.deleteButton)
         self.layout.addWidget(self.moveButton)
-        # self.panel.setLayout(layout)
-        # layout.addWidget(self.panel)
-
-        # self.uploadButton = QtWidgets.QLabel(
-        #     text = "Hello World",
-        #     # alignment = QtCore.Qt.AlignCenter
-        # )
-        # self.layout = QtWidgets.QVBoxLayout(self)
-        # layout.addWidget(self.panel)
-        
-
 
 
 class Main(QtWidgets.QWidget):
 
     def __init__(self) -> None:
         super().__init__()
-        # self.resize(800, 600)
         self.layout = QHBoxLayout(self)
-        self.setWindowTitle("This is a test")
+        # self.resize(800, 400)
+        self.setWindowTitle("Files Manager")
         self.setWindowIcon(QtGui.QIcon('icons/app.png'))
-        self.panel1 = MyPanel()
-        self.panel1.setObjectName("myPanel")
+        self.filesExplorerPanel = FilesExplorerPanel()
+        # self.panel1.setObjectName("myPanel")
 
-        self.rightPanel = RightPanel()
-        self.rightPanel.setObjectName("panel2")
+        self.sidePanel = SidePanel()
+        # self.rightPanel.setObjectName("panel2")
 
         # self.panel1.setStyleSheet("color: blue; background-color: yellow")
         # panel2.setStyleSheet("color: blue; background-color: yellow")
 
-        self.layout.addWidget(self.panel1, stretch=1)
-        self.layout.addWidget(self.rightPanel, stretch=1)
+        self.layout.addWidget(self.filesExplorerPanel, stretch=1)
+        self.layout.addWidget(self.sidePanel, stretch=2)
         
         # self.setStyleSheet("QWidget#panel1 { background-color: red }")
         self.show()
